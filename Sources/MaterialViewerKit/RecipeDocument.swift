@@ -7,6 +7,10 @@ public struct RecipeError: LocalizedError {
 }
 
 public struct RecipeDocument {
+    public static let systemFrameworkURL = URL(
+        fileURLWithPath: "/System/Library/PrivateFrameworks/CoreMaterial.framework/", isDirectory: true
+    )
+
     public let url: URL
     public let source: [String: Any]
     public let resolved: [String: Any]

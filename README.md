@@ -3,11 +3,11 @@
 A macOS tool that reads CoreMaterial property lists and previews their base
 material with a real `MTMaterialLayer`.
 
-## Run
+## Build and run the app
 
 Requires macOS 14 or later and an Xcode toolchain with Swift 6.3 or later.
 The private CoreMaterial interfaces must be available on the host OS.
-Launch without arguments to load recipes from
+The app loads recipes from
 `/System/Library/PrivateFrameworks/CoreMaterial.framework/`. Use **Open** or pass
 an input path on the command line to inspect another recipe or folder.
 
@@ -17,32 +17,82 @@ an input path on the command line to inspect another recipe or folder.
 ./run.sh /path/to/CoreMaterial.framework
 ```
 
-`build.sh` creates `dist/Material Recipe Viewer.app` with bundle identifier
-`org.OpenSwiftUIProject.MaterialViewer` and the standalone executable
-`dist/MaterialRecipeViewer`. Neither output bundles recipe resources or depends
-on an archive location. You can also run `swift run MaterialRecipeViewer` with an
-optional input path.
+Open [MaterialViewer.xcodeproj](MaterialViewer.xcodeproj) and run the
+`MaterialViewer` scheme, or use `./build.sh` to build the Release configuration.
+Use `CONFIGURATION=Debug ./build.sh` for a Debug build. `run.sh` builds and opens
+the app. App startup flags: `--effect-off`, `--grid`, and `--layer-json`.
+
+Signing uses Automatic with development team `VB7MJ8R223` in
+[common.xcconfig](xcconfigs/common.xcconfig). The app bundle identifier is
+`org.OpenSwiftUIProject.MaterialViewer`. You can pass Xcode build settings to
+`build.sh`, for example `./build.sh DEVELOPMENT_TEAM=YOUR_TEAM_ID`.
+
+`build.sh` only invokes `xcodebuild`. The project builds, embeds, and signs both
+executables. The script's Release app is at
+`DerivedData/Build/Products/Release/MaterialViewer.app`; Debug builds use the
+`Debug` directory. The Xcode GUI uses its configured DerivedData location.
+The app does not bundle recipe resources or depend on an archive location.
+
+## Project structure
+
+[Package.swift](Package.swift) provides two products:
+
+- `MaterialViewerKit`: recipe parsing, resource resolution, and native rendering.
+- `materialviewer`: a command-line executable that depends on `MaterialViewerKit`.
+
+The native Xcode app target `MaterialViewerApp` uses the local package at the
+repository root. It links `MaterialViewerKit`, builds the `materialviewer` product as a dependency,
+and embeds it with a Copy Files phase and Code Sign on Copy. The project uses
+xcconfig files and requires no project generator or custom build phase scripts.
+App sources are under `App/MaterialViewer`; package sources are under `Sources`.
+Only the library is in the app's package product dependencies. The CLI uses a
+target dependency and a copy reference so Xcode does not treat it as a linked
+library or convert their shared code to dynamic frameworks.
+
+The app target and Swift module use `MaterialViewerApp`, while the product is
+`MaterialViewer.app`. This keeps their build paths distinct from `materialviewer`
+on file systems that do not distinguish uppercase and lowercase names.
+
+The app and CLI have separate entry points and binaries:
+
+```text
+MaterialViewer.app/
+  Contents/
+    MacOS/MaterialViewer
+    Helpers/materialviewer
+```
 
 ## Command line
 
 ```sh
 ./build.sh
-./dist/MaterialRecipeViewer --help
-./dist/MaterialRecipeViewer --check
-./dist/MaterialRecipeViewer --check /path/to/example.materialrecipe
-./dist/MaterialRecipeViewer --check /path/to/CoreMaterial.framework
+app=DerivedData/Build/Products/Release/MaterialViewer.app
+"$app/Contents/Helpers/materialviewer"
+"$app/Contents/Helpers/materialviewer" --check
+"$app/Contents/Helpers/materialviewer" --check /path/to/example.materialrecipe
 ```
 
-`--check` runs without opening a window. It prints a layer JSON report for each
+No arguments, `--help`, or `-h` prints help and exits. The CLI never opens the app.
+`--check` prints a layer JSON report for each
 recipe, followed by a text summary. It exits with a nonzero status if a recipe
 fails to load or has missing style resources. Without an input path, it reads
-the host's CoreMaterial framework. Without `--check`, the executable opens the
-viewer window.
+the host's CoreMaterial framework. Invalid arguments exit with status 2.
 
-The executable can run outside this checkout. Copy `dist/MaterialRecipeViewer`
-to the desired location; no app bundle or adjacent resources are required. The
-binary targets the build machine's architecture and requires macOS 14 or later
-with the native CoreMaterial interfaces available.
+The executable can run outside this checkout. Copy `Contents/Helpers/materialviewer`
+from the built app to the desired location; no app bundle or adjacent resources
+are required. The CLI requires macOS 14 or later with the native CoreMaterial
+interfaces available.
+
+To build or run only the CLI with Swift Package Manager:
+
+```sh
+swift run materialviewer --check
+swift build -c release --product materialviewer
+.build/release/materialviewer --check /path/to/CoreMaterial.framework
+```
+
+The SwiftPM build does not use the Xcode signing settings. Use the CLI copied
+from the app when you need the configured development signature.
 
 ## Use
 
@@ -90,8 +140,9 @@ error. There is no substitute blur implementation.
 
 ```sh
 swift test
-swift run MaterialRecipeViewer --check
-swift run MaterialRecipeViewer --check /path/to/CoreMaterial.framework
+swift run materialviewer --check
+swift run materialviewer --check /path/to/CoreMaterial.framework
+python3 Scripts/check-cli.py DerivedData/Build/Products/Release/MaterialViewer.app/Contents/Helpers/materialviewer
 ```
 
 The tests cover flat and versioned framework resource discovery, binary/XML
@@ -104,7 +155,9 @@ It returns a nonzero exit code on load
 errors or missing style resources. It does not verify pixels; inspect the live
 window to verify background sampling.
 
-Optional startup flags: `--effect-off`, `--grid`, and `--layer-json`.
+The CLI smoke check requires Python 3. It copies the binary to a temporary
+directory, checks help and error exit codes, and loads all system recipes. This
+also checks that the CLI runs without the app bundle or build directory.
 
 Verified on macOS 26.6.2 (25G83): all 41 archived recipes load, and all four
 resolved descendants produce the same layer and filter inputs as native

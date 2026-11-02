@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-@testable import RecipeKit
+@testable import MaterialViewerKit
 
 final class RecipeDocumentTests: XCTestCase {
     private var directory: URL!

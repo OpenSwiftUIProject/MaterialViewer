@@ -1,18 +1,6 @@
 import AppKit
 import SwiftUI
-import RecipeKit
-import MaterialRuntime
-
-@MainActor
-final class PreviewSession {
-    let bundle: PreviewBundle
-    let renderer: MRMaterialRenderer
-
-    init(document: RecipeDocument) throws {
-        bundle = try PreviewBundle(document: document)
-        renderer = try MRMaterialRenderer(recipeName: bundle.recipeName, bundleURL: bundle.url)
-    }
-}
+import MaterialViewerKit
 
 @MainActor
 final class ViewerModel: ObservableObject {
@@ -174,8 +162,7 @@ enum Launcher {
         let arguments = Array(CommandLine.arguments.dropFirst())
         if arguments.contains("--help") {
             print("""
-            Usage: MaterialRecipeViewer [recipe-or-folder]
-                   MaterialRecipeViewer --check [recipe-or-folder]
+            Usage: MaterialViewer [recipe-or-folder]
             Default input: /System/Library/PrivateFrameworks/CoreMaterial.framework/
             Preview options: --effect-off --grid --layer-json
             """)
@@ -183,7 +170,7 @@ enum Launcher {
         }
         var provided: String?
         for argument in arguments {
-            if ["--check", "--effect-off", "--grid", "--layer-json"].contains(argument) {
+            if ["--effect-off", "--grid", "--layer-json"].contains(argument) {
                 continue
             } else if !argument.hasPrefix("-"), provided == nil {
                 provided = argument
@@ -193,10 +180,7 @@ enum Launcher {
             }
         }
         let input = provided.map { URL(fileURLWithPath: $0).standardizedFileURL }
-            ?? URL(fileURLWithPath: "/System/Library/PrivateFrameworks/CoreMaterial.framework/", isDirectory: true)
-        if arguments.contains("--check") {
-            exit(check(input))
-        }
+            ?? RecipeDocument.systemFrameworkURL
         let app = NSApplication.shared
         app.setActivationPolicy(.regular)
         let delegate = AppDelegate(input: input,
@@ -204,42 +188,5 @@ enum Launcher {
                                    grid: arguments.contains("--grid"), layerJSON: arguments.contains("--layer-json"))
         app.delegate = delegate
         withExtendedLifetime(delegate) { app.run() }
-    }
-
-    @MainActor
-    static func check(_ input: URL) -> Int32 {
-        do {
-            var directory: ObjCBool = false
-            guard FileManager.default.fileExists(atPath: input.path, isDirectory: &directory) else {
-                throw RecipeError("File not found: \(input.path)")
-            }
-            let files = directory.boolValue ? try RecipeDocument.recipes(in: input) : [input]
-            guard !files.isEmpty else { throw RecipeError("No material recipes found.") }
-            var failures = 0
-            for file in files {
-                do {
-                    let document = try RecipeDocument(url: file)
-                    let session = try PreviewSession(document: document)
-                    let snapshot = try session.renderer.layerSnapshot()
-                    try session.renderer.configure(withWeight: 0.25, reduceTransparency: true)
-                    let adjusted = try session.renderer.layerSnapshot()
-                    guard (adjusted["weighting"] as? NSNumber)?.doubleValue == 0.25,
-                          (adjusted["isReduceTransparencyEnabled"] as? NSNumber)?.boolValue == true else {
-                        throw RecipeError("The renderer did not apply the requested settings.")
-                    }
-                    let report: [String: Any] = ["file": file.lastPathComponent, "layer": snapshot, "warnings": document.warnings]
-                    print(try RecipeDocument.json(report))
-                    if !document.warnings.isEmpty { failures += 1 }
-                } catch {
-                    failures += 1
-                    fputs("FAIL \(file.lastPathComponent): \(error.localizedDescription)\n", stderr)
-                }
-            }
-            print("Checked \(files.count) recipes; \(failures) failures.")
-            return failures == 0 ? 0 : 1
-        } catch {
-            fputs("\(error.localizedDescription)\n", stderr)
-            return 1
-        }
     }
 }

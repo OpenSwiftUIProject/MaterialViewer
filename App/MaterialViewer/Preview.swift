@@ -1,6 +1,7 @@
 import AppKit
 import SwiftUI
 import QuartzCore
+import MaterialViewerKit
 
 struct MaterialPreview: NSViewRepresentable {
     let session: PreviewSession

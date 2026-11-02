@@ -1,0 +1,259 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9A341FECB93E9889E64928AF /* materialviewer in Embed CLI */ = {isa = PBXBuildFile; productRef = EBB99A6A7A3C19DC74F6A5BD /* materialviewer */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		A797F6FAAE83737A8B6FA122 /* MaterialViewerKit in Frameworks */ = {isa = PBXBuildFile; productRef = EDCDEE3EEF343FEB8C16F589 /* MaterialViewerKit */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		58B2222FBD09B5645646C425 /* Embed CLI */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Helpers;
+			dstSubfolderSpec = 1;
+			files = (
+				9A341FECB93E9889E64928AF /* materialviewer in Embed CLI */,
+			);
+			name = "Embed CLI";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		1BD69CBB51BCBC9CE53F9B89 /* MaterialViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MaterialViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C6920723D0B6061D665B507C /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+		D556E212380D090A6EF0CC5D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		3A2D7D9A4004477B3CABE602 /* App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = App;
+			sourceTree = "<group>";
+		};
+		A3EDB2934A15BCC7BCB4993B /* xcconfigs */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = xcconfigs;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2FD227C6BB80BDFFE7803738 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A797F6FAAE83737A8B6FA122 /* MaterialViewerKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		037279F8935BBC040EC62CF4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1BD69CBB51BCBC9CE53F9B89 /* MaterialViewer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		63251069E6CCA56BCFD6F855 = {
+			isa = PBXGroup;
+			children = (
+				D556E212380D090A6EF0CC5D /* README.md */,
+				C6920723D0B6061D665B507C /* Package.swift */,
+				3A2D7D9A4004477B3CABE602 /* App */,
+				A3EDB2934A15BCC7BCB4993B /* xcconfigs */,
+				037279F8935BBC040EC62CF4 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B1F697FAB5530156332A816B /* MaterialViewerApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 47104DAE57CABB26E189CF59 /* Build configuration list for PBXNativeTarget "MaterialViewerApp" */;
+			buildPhases = (
+				F5D4E99F6FF66322F6D72582 /* Sources */,
+				2FD227C6BB80BDFFE7803738 /* Frameworks */,
+				4A8AC1CB763FA646A1E35F0A /* Resources */,
+				58B2222FBD09B5645646C425 /* Embed CLI */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C3865D6032EF5A1E0CAFF2CC /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				3A2D7D9A4004477B3CABE602 /* App */,
+			);
+			name = MaterialViewerApp;
+			packageProductDependencies = (
+				EDCDEE3EEF343FEB8C16F589 /* MaterialViewerKit */,
+			);
+			productName = MaterialViewer;
+			productReference = 1BD69CBB51BCBC9CE53F9B89 /* MaterialViewer.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		52ABE289B695C09229154C78 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 2600;
+				TargetAttributes = {
+					B1F697FAB5530156332A816B = {
+						CreatedOnToolsVersion = 26.0;
+						DevelopmentTeam = VB7MJ8R223;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 25F53F95F966FAB5CDEB164C /* Build configuration list for PBXProject "MaterialViewer" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 63251069E6CCA56BCFD6F855;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				D1A3F22B54C3BCA886155933 /* XCLocalSwiftPackageReference "." */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 037279F8935BBC040EC62CF4 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B1F697FAB5530156332A816B /* MaterialViewerApp */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		4A8AC1CB763FA646A1E35F0A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F5D4E99F6FF66322F6D72582 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C3865D6032EF5A1E0CAFF2CC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = EBB99A6A7A3C19DC74F6A5BD /* materialviewer */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		9FC112C0791D996139155A33 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = A3EDB2934A15BCC7BCB4993B /* xcconfigs */;
+			baseConfigurationReferenceRelativePath = common.xcconfig;
+			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = VB7MJ8R223;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		A9190DB116CF5CBAADEFC312 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = A3EDB2934A15BCC7BCB4993B /* xcconfigs */;
+			baseConfigurationReferenceRelativePath = common.xcconfig;
+			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = VB7MJ8R223;
+				ENABLE_TESTABILITY = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		B07780DEEA31F335BF544129 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = A3EDB2934A15BCC7BCB4993B /* xcconfigs */;
+			baseConfigurationReferenceRelativePath = app.xcconfig;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		DECB8EAAF4A714A07B200348 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = A3EDB2934A15BCC7BCB4993B /* xcconfigs */;
+			baseConfigurationReferenceRelativePath = app.xcconfig;
+			buildSettings = {
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		25F53F95F966FAB5CDEB164C /* Build configuration list for PBXProject "MaterialViewer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A9190DB116CF5CBAADEFC312 /* Debug */,
+				9FC112C0791D996139155A33 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		47104DAE57CABB26E189CF59 /* Build configuration list for PBXNativeTarget "MaterialViewerApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B07780DEEA31F335BF544129 /* Debug */,
+				DECB8EAAF4A714A07B200348 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		D1A3F22B54C3BCA886155933 /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		EBB99A6A7A3C19DC74F6A5BD /* materialviewer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D1A3F22B54C3BCA886155933 /* XCLocalSwiftPackageReference "." */;
+			productName = materialviewer;
+		};
+		EDCDEE3EEF343FEB8C16F589 /* MaterialViewerKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D1A3F22B54C3BCA886155933 /* XCLocalSwiftPackageReference "." */;
+			productName = MaterialViewerKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 52ABE289B695C09229154C78 /* Project object */;
+}

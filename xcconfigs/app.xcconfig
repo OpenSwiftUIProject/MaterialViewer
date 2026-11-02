@@ -1,0 +1,9 @@
+PRODUCT_NAME = MaterialViewer
+PRODUCT_MODULE_NAME = MaterialViewerApp
+PRODUCT_BUNDLE_IDENTIFIER = org.OpenSwiftUIProject.MaterialViewer
+GENERATE_INFOPLIST_FILE = YES
+INFOPLIST_KEY_CFBundleDisplayName = Material Recipe Viewer
+INFOPLIST_KEY_LSApplicationCategoryType = public.app-category.developer-tools
+ENABLE_APP_SANDBOX = NO
+ENABLE_HARDENED_RUNTIME = YES
+LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/../Frameworks

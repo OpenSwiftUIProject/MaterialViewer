@@ -2,22 +2,22 @@
 import PackageDescription
 
 let package = Package(
-    name: "MaterialRecipeViewer",
+    name: "MaterialViewer",
     platforms: [.macOS(.v14)],
     products: [
-        .executable(name: "MaterialRecipeViewer", targets: ["MaterialRecipeViewer"])
+        .library(name: "MaterialViewerKit", targets: ["MaterialViewerKit"]),
+        .executable(name: "materialviewer", targets: ["MaterialViewerCLI"])
     ],
     targets: [
-        .target(name: "RecipeKit"),
+        .target(name: "MaterialViewerKit", dependencies: ["MaterialRuntime"]),
         .target(
             name: "MaterialRuntime",
-            cSettings: [.unsafeFlags(["-fobjc-arc"])],
             linkerSettings: [.linkedFramework("AppKit"), .linkedFramework("QuartzCore")]
         ),
         .executableTarget(
-            name: "MaterialRecipeViewer",
-            dependencies: ["RecipeKit", "MaterialRuntime"]
+            name: "MaterialViewerCLI",
+            dependencies: ["MaterialViewerKit"]
         ),
-        .testTarget(name: "RecipeKitTests", dependencies: ["RecipeKit"])
+        .testTarget(name: "MaterialViewerKitTests", dependencies: ["MaterialViewerKit"])
     ]
 )

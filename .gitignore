@@ -1,4 +1,12 @@
 .build/
 .swiftpm/
+.vscode/
 dist/
 .DS_Store
+DerivedData/
+MaterialViewer.xcodeproj/project.xcworkspace/
+xcuserdata/
+*.xcresult
+!MaterialViewer.xcodeproj/xcshareddata/
+!MaterialViewer.xcodeproj/xcshareddata/xcschemes/
+!MaterialViewer.xcodeproj/xcshareddata/xcschemes/*.xcscheme
