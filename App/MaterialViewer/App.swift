@@ -159,7 +159,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 enum Launcher {
     @MainActor
     static func main() {
-        let arguments = Array(CommandLine.arguments.dropFirst())
+        var arguments: [String] = []
+        var iterator = CommandLine.arguments.dropFirst().makeIterator()
+        while let argument = iterator.next() {
+            // Cocoa consumes single-dash key/value pairs as launch-time preferences.
+            if argument.count > 1, argument.hasPrefix("-"), !argument.hasPrefix("--") {
+                guard iterator.next() != nil else {
+                    fputs("Missing value for preference: \(argument)\n", stderr)
+                    exit(1)
+                }
+            } else {
+                arguments.append(argument)
+            }
+        }
         if arguments.contains("--help") {
             print("""
             Usage: MaterialViewer [recipe-or-folder]
