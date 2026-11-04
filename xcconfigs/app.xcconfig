@@ -6,4 +6,13 @@ INFOPLIST_KEY_CFBundleDisplayName = Material Recipe Viewer
 INFOPLIST_KEY_LSApplicationCategoryType = public.app-category.developer-tools
 ENABLE_APP_SANDBOX = NO
 ENABLE_HARDENED_RUNTIME = YES
-LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/../Frameworks
+LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/Frameworks
+LD_RUNPATH_SEARCH_PATHS[sdk=macosx*] = $(inherited) @executable_path/../Frameworks
+SUPPORTS_MACCATALYST = NO
+SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO
+TARGETED_DEVICE_FAMILY[sdk=iphone*] = 1,2
+TARGETED_DEVICE_FAMILY[sdk=xr*] = 7
+INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphone*] = YES
+INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphone*] = YES
+INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=xr*] = YES
+INFOPLIST_KEY_UISupportedInterfaceOrientations[sdk=iphone*] = UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight

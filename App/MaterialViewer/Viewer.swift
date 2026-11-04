@@ -1,37 +1,64 @@
-import AppKit
 import SwiftUI
+import UniformTypeIdentifiers
+import MaterialViewerKit
 
 struct Viewer: View {
     @ObservedObject var model: ViewerModel
+    @State private var compactColumn = NavigationSplitViewColumn.sidebar
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 14) {
-                Image(systemName: "square.3.layers.3d").font(.title2).foregroundStyle(.tint)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Material Recipe Viewer").font(.headline)
-                    Text("CoreMaterial resources").font(.caption).foregroundStyle(.secondary)
+        NavigationSplitView(preferredCompactColumn: $compactColumn) {
+            sidebar
+                .navigationTitle("Materials")
+                .navigationSplitViewColumnWidth(min: 210, ideal: 260, max: 360)
+                .searchable(text: $model.search, prompt: "Find a recipe")
+                .toolbar {
+                    #if !os(watchOS)
+                    ToolbarItem {
+                        Menu {
+                            Button("Open…", systemImage: "folder") { model.importPresented = true }
+                            Button("System Materials", systemImage: "square.3.layers.3d") {
+                                model.open(RecipeDocument.systemFrameworkURL)
+                            }
+                        } label: {
+                            Label("Open", systemImage: "folder")
+                        }
+                        .help("Open a recipe or folder")
+                    }
+                    #endif
                 }
-                Spacer()
-                Button("Open…", systemImage: "folder") { model.chooseInput() }
-                Button("Reload", systemImage: "arrow.clockwise") { model.load(model.selection) }
-                    .disabled(model.selection == nil)
-            }
-            .padding(16)
-            Divider()
-            HSplitView {
-                sidebar.frame(minWidth: 210, idealWidth: 260, maxWidth: 350)
-                inspector.frame(minWidth: 360, idealWidth: 460)
-                preview.frame(minWidth: 440, idealWidth: 600)
-            }
-            HStack {
-                Text(model.document?.url.path ?? "Open a recipe to begin")
-                    .lineLimit(1).truncationMode(.middle).help(model.document?.url.path ?? "")
-                Spacer()
-                Text("Read only").foregroundStyle(.secondary)
-            }
-            .font(.caption).padding(.horizontal, 16).padding(.vertical, 8)
+        } detail: {
+            detail
+                .navigationTitle(model.document?.name ?? "MaterialViewer")
+                #if os(iOS) || os(visionOS)
+                .navigationBarTitleDisplayMode(.inline)
+                #endif
+                .toolbar {
+                    ToolbarItemGroup(placement: .primaryAction) {
+                        Button("Reload", systemImage: "arrow.clockwise") { model.load(model.selection) }
+                            .disabled(model.selection == nil)
+                        #if !os(watchOS)
+                        Button("JSON", systemImage: "curlybraces") { model.inspectorPresented.toggle() }
+                            .help("Show JSON inspector")
+                        #endif
+                    }
+                }
         }
+        #if os(macOS) || os(iOS)
+        .inspector(isPresented: $model.inspectorPresented) {
+            JSONInspector(model: model)
+                .inspectorColumnWidth(min: 280, ideal: 380, max: 640)
+        }
+        #endif
+        #if !os(watchOS)
+        .fileImporter(isPresented: $model.importPresented, allowedContentTypes: [.folder, .bundle, .data], allowsMultipleSelection: false) { result in
+            switch result {
+            case .success(let urls):
+                if let url = urls.first { model.open(url) }
+            case .failure(let error): model.error = error.localizedDescription
+            }
+        }
+        #endif
         .onChange(of: model.selection) { _, url in
             if url != model.document?.url { model.load(url) }
         }
@@ -41,152 +68,193 @@ struct Viewer: View {
         .onChange(of: model.jsonMode) { model.refreshSnapshot() }
     }
 
+    @ViewBuilder
+    private var detail: some View {
+        #if os(visionOS)
+        HStack(spacing: 0) {
+            RecipeDetail(model: model)
+            if model.inspectorPresented {
+                Divider()
+                JSONInspector(model: model).frame(width: 380)
+            }
+        }
+        #else
+        RecipeDetail(model: model)
+        #endif
+    }
+
     private var sidebar: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            TextField("Filter recipes", text: $model.search)
-                .textFieldStyle(.roundedBorder).padding(12)
-            Text("\(model.filteredFiles.count) RECIPES")
-                .font(.system(size: 10, weight: .semibold)).foregroundStyle(.secondary)
-                .padding(.horizontal, 14).padding(.bottom, 6)
-            ScrollViewReader { proxy in
-                List(model.filteredFiles, id: \.self, selection: $model.selection) { url in
-                    HStack(spacing: 6) {
-                        Image(systemName: url.pathExtension == "descendantrecipe" ? "arrow.turn.down.right" : "square.stack.3d.up")
-                            .foregroundStyle(.secondary)
-                        Text(url.deletingPathExtension().lastPathComponent).font(.system(size: 12))
-                            .lineLimit(1).help(url.lastPathComponent)
+        ScrollViewReader { proxy in
+            List(selection: $model.selection) {
+                Section("\(model.filteredFiles.count) recipes") {
+                    ForEach(model.filteredFiles, id: \.self) { url in
+                        NavigationLink(value: url) {
+                            Label(url.deletingPathExtension().lastPathComponent,
+                                  systemImage: url.pathExtension == "descendantrecipe" ? "arrow.turn.down.right" : "square.3.layers.3d")
+                                .lineLimit(2)
+                        }
+                        .id(url)
                     }
-                    .padding(.vertical, 3).tag(url).id(url)
-                }
-                .listStyle(.sidebar)
-                .onChange(of: model.selection) { _, selection in
-                    if let selection { proxy.scrollTo(selection, anchor: .center) }
                 }
             }
+            .onChange(of: model.selection, initial: true) { _, selection in
+                if let selection { proxy.scrollTo(selection, anchor: .center) }
+            }
         }
-    }
-
-    private var inspector: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("JSON").font(.headline)
-                Spacer()
-                Text(model.document?.formatName ?? "").font(.caption).foregroundStyle(.secondary)
-                Button { model.copyJSON() } label: { Image(systemName: "doc.on.doc") }
-                    .help("Copy displayed JSON").accessibilityLabel("Copy JSON")
+        .overlay {
+            if model.filteredFiles.isEmpty {
+                ContentUnavailableView(model.search.isEmpty ? "No Materials" : "No Results",
+                                       systemImage: "square.3.layers.3d",
+                                       description: Text(model.search.isEmpty ? model.error ?? "Open a recipe or resource folder." : "Try another recipe name."))
             }
-            Picker("JSON content", selection: $model.jsonMode) {
-                Text("Source").tag("Source")
-                Text("Resolved").tag("Resolved")
-                Text("Layer").tag("Layer")
-            }
-            .pickerStyle(.segmented)
-            JSONTextView(text: model.displayedJSON)
-                .overlay(RoundedRectangle(cornerRadius: 6).stroke(.quaternary))
-            Text(jsonCaption).font(.caption).foregroundStyle(.secondary).frame(height: 32, alignment: .topLeading)
         }
-        .padding(16)
-    }
-
-    private var jsonCaption: String {
-        switch model.jsonMode {
-        case "Resolved": return "Inherited values and referenced style sets. Arrays replace inherited arrays."
-        case "Layer": return "Live layer tree and filter inputs from the current macOS renderer."
-        default: return "Original property list decoded as JSON. Source files stay unchanged."
-        }
-    }
-
-    private var preview: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack {
-                Text("Live layer").font(.headline)
-                Spacer()
-                if model.session != nil {
-                    Label("MTMaterialLayer", systemImage: "circle.fill")
-                        .font(.caption).foregroundStyle(.green)
-                }
-            }
-            Text(model.document?.name ?? "No recipe selected")
-                .font(.system(.title3, design: .monospaced)).lineLimit(1).minimumScaleFactor(0.7)
-                .textSelection(.enabled)
-            ZStack {
-                if let session = model.session {
-                    MaterialPreview(session: session, background: model.background, animated: model.animated,
-                                    darkText: !(model.document?.name.lowercased().contains("dark") ?? false)) {
-                        model.refreshSnapshot()
-                    }
-                } else {
-                    ContentUnavailableView("Preview unavailable", systemImage: "square.3.layers.3d",
-                                           description: Text(model.error ?? "Choose a material recipe."))
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .overlay(RoundedRectangle(cornerRadius: 12).stroke(.quaternary))
-            HStack {
-                Picker("Backdrop", selection: $model.background) {
-                    Text("Colors").tag("Colors")
-                    Text("Grid").tag("Grid")
-                }.pickerStyle(.segmented).frame(width: 180)
-                Spacer()
-                Toggle("Animate", isOn: $model.animated).toggleStyle(.checkbox)
-            }
-            HStack {
-                Toggle("Effect", isOn: $model.effectEnabled).toggleStyle(.switch)
-                Spacer()
-                Toggle("Reduce transparency", isOn: $model.reduceTransparency).toggleStyle(.checkbox)
-            }
-            HStack(spacing: 12) {
-                Text("Weight").font(.callout)
-                Slider(value: $model.weight, in: 0...1)
-                Text(model.weight, format: .number.precision(.fractionLength(2)))
-                    .font(.system(.callout, design: .monospaced)).frame(width: 38)
-            }
-            if let error = model.error {
-                Text(error).font(.caption).foregroundStyle(.red).textSelection(.enabled)
-            }
-            if let warnings = model.document?.warnings, !warnings.isEmpty {
-                Text(warnings.joined(separator: "\n")).font(.caption).foregroundStyle(.orange)
-            }
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Base material preview. Fill and stroke styles are available in Resolved JSON.")
-                Text(model.session?.renderer.runtimeDescription ?? "Open a recipe to inspect the host renderer.")
-                Text("The host renderer can differ from the recipe's original OS.")
-            }
-            .font(.caption).foregroundStyle(.secondary)
-        }
-        .padding(16)
     }
 }
 
-struct JSONTextView: NSViewRepresentable {
-    let text: String
+private struct RecipeDetail: View {
+    @ObservedObject var model: ViewerModel
 
-    func makeNSView(context: Context) -> NSScrollView {
-        let scroll = NSScrollView()
-        scroll.hasVerticalScroller = true
-        scroll.hasHorizontalScroller = true
-        let view = NSTextView()
-        view.isEditable = false
-        view.isSelectable = true
-        view.isRichText = false
-        view.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
-        view.textColor = .labelColor
-        view.backgroundColor = .textBackgroundColor
-        view.textContainerInset = NSSize(width: 12, height: 12)
-        view.isHorizontallyResizable = true
-        view.isVerticallyResizable = true
-        view.autoresizingMask = [.width]
-        view.textContainer?.widthTracksTextView = false
-        view.textContainer?.containerSize = NSSize(width: 100_000, height: CGFloat.greatestFiniteMagnitude)
-        view.maxSize = NSSize(width: 100_000, height: CGFloat.greatestFiniteMagnitude)
-        scroll.documentView = view
-        return scroll
+    var body: some View {
+        if let document = model.document {
+            Form {
+                Section {
+                    if model.session != nil {
+                        MaterialPreview(model: model)
+                            #if os(watchOS)
+                            .frame(height: 170)
+                            #else
+                            .aspectRatio(1.25, contentMode: .fit)
+                            .frame(minHeight: 220, maxHeight: 520)
+                            #endif
+                            .listRowInsets(EdgeInsets())
+                    } else {
+                        ContentUnavailableView("Preview Unavailable", systemImage: "square.3.layers.3d",
+                                               description: Text(model.error ?? "The renderer is unavailable on this system."))
+                    }
+                }
+                #if os(watchOS)
+                Section {
+                    NavigationLink {
+                        JSONInspector(model: model).navigationTitle("JSON")
+                    } label: {
+                        Label("JSON", systemImage: "curlybraces")
+                    }
+                }
+                #endif
+                Section("Preview") {
+                    Picker("Background", selection: $model.background) {
+                        Text("Colors").tag("Colors")
+                        Text("Grid").tag("Grid")
+                    }
+                    Toggle("Animate", isOn: $model.animated)
+                    Toggle("Effect", isOn: $model.effectEnabled)
+                    Toggle("Reduce Transparency", isOn: $model.reduceTransparency)
+                    VStack(alignment: .leading) {
+                        LabeledContent("Weight", value: model.weight, format: .number.precision(.fractionLength(2)))
+                            .monospacedDigit()
+                        Slider(value: $model.weight, in: 0...1) { Text("Weight") }
+                    }
+                }
+                .disabled(model.session == nil)
+                if let error = model.error, model.session != nil {
+                    Section("Preview Error") { Text(error).foregroundStyle(.red) }
+                }
+                if !document.warnings.isEmpty {
+                    Section("Resource Warnings") {
+                        ForEach(document.warnings, id: \.self) { Text($0) }
+                    }
+                }
+                Section {
+                    LabeledContent("Format", value: document.formatName)
+                    #if os(watchOS)
+                    NavigationLink("Details") {
+                        List { metadata(document) }.navigationTitle("Details")
+                    }
+                    #else
+                    DisclosureGroup("Details") {
+                        metadata(document)
+                    }
+                    #endif
+                }
+            }
+            #if !os(watchOS)
+            .formStyle(.grouped)
+            #endif
+        } else {
+            ContentUnavailableView("Select a Material", systemImage: "square.3.layers.3d",
+                                   description: Text(model.error ?? "Choose a recipe from the sidebar to inspect its layers."))
+        }
     }
 
-    func updateNSView(_ scroll: NSScrollView, context: Context) {
-        guard let view = scroll.documentView as? NSTextView, view.string != text else { return }
-        view.string = text
-        view.scrollToBeginningOfDocument(nil)
+    private func metadata(_ document: RecipeDocument) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(document.url.path)
+            Text(model.session?.renderer.runtimeDescription ?? "Renderer unavailable")
+            Text("Base material preview. Fill and stroke styles are available in Resolved JSON. Rendering uses the current system.")
+        }
+        .font(.caption).foregroundStyle(.secondary)
+    }
+}
+
+private struct JSONInspector: View {
+    @ObservedObject var model: ViewerModel
+
+    var body: some View {
+        VStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 12) {
+                #if !os(watchOS)
+                HStack {
+                    Text("JSON").font(.headline)
+                    Spacer()
+                    Button("Copy JSON", systemImage: "doc.on.doc") { model.copyJSON() }
+                        .labelStyle(.iconOnly)
+                        .buttonStyle(.borderless)
+                        .disabled(model.document == nil)
+                        .help("Copy displayed JSON")
+                    ShareLink(item: model.displayedJSON) { Label("Share JSON", systemImage: "square.and.arrow.up") }
+                        .labelStyle(.iconOnly)
+                        .buttonStyle(.borderless)
+                        .disabled(model.document == nil)
+                }
+                #endif
+                Picker("Content", selection: $model.jsonMode) {
+                    Text("Source").tag("Source")
+                    Text("Resolved").tag("Resolved")
+                    Text("Layer").tag("Layer")
+                }
+                #if !os(watchOS)
+                .pickerStyle(.segmented)
+                #endif
+            }
+            .padding()
+            Divider()
+            GeometryReader { geometry in
+                ScrollView([.horizontal, .vertical]) {
+                    Text(model.displayedJSON)
+                        .font(.system(.caption, design: .monospaced))
+                        #if !os(watchOS)
+                        .textSelection(.enabled)
+                        #endif
+                        .fixedSize(horizontal: true, vertical: true)
+                        .padding()
+                        .frame(minWidth: geometry.size.width, minHeight: geometry.size.height, alignment: .topLeading)
+                }
+            }
+            #if !os(watchOS)
+            Divider()
+            Text(caption)
+                .font(.caption).foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+            #endif
+        }
+    }
+
+    private var caption: String {
+        switch model.jsonMode {
+        case "Resolved": return "Inherited values and referenced style sets."
+        case "Layer": return "Live layer tree and filter inputs from the current renderer."
+        default: return "Original property list. Source files stay unchanged."
+        }
     }
 }

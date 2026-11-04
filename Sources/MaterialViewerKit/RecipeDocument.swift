@@ -1,4 +1,5 @@
 import Foundation
+import MaterialRuntime
 
 public struct RecipeError: LocalizedError {
     public let message: String
@@ -7,9 +8,7 @@ public struct RecipeError: LocalizedError {
 }
 
 public struct RecipeDocument {
-    public static let systemFrameworkURL = URL(
-        fileURLWithPath: "/System/Library/PrivateFrameworks/CoreMaterial.framework/", isDirectory: true
-    )
+    public static var systemFrameworkURL: URL { MRMaterialRenderer.systemFrameworkURL }
 
     public let url: URL
     public let source: [String: Any]

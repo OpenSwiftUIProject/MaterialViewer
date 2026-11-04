@@ -7,8 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9A341FECB93E9889E64928AF /* materialviewer in Embed CLI */ = {isa = PBXBuildFile; productRef = EBB99A6A7A3C19DC74F6A5BD /* materialviewer */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		9A341FECB93E9889E64928AF /* materialviewer in Embed CLI */ = {isa = PBXBuildFile; platformFilters = (macos, ); productRef = EBB99A6A7A3C19DC74F6A5BD /* materialviewer */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		A797F6FAAE83737A8B6FA122 /* MaterialViewerKit in Frameworks */ = {isa = PBXBuildFile; productRef = EDCDEE3EEF343FEB8C16F589 /* MaterialViewerKit */; };
+		D7D3D0877960BB5F2E96C0C2 /* MaterialViewerKit in Watch Frameworks */ = {
+			isa = PBXBuildFile;
+			productRef = EDCDEE3EEF343FEB8C16F589 /* MaterialViewerKit */;
+		};
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -29,6 +33,12 @@
 		1BD69CBB51BCBC9CE53F9B89 /* MaterialViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MaterialViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6920723D0B6061D665B507C /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		D556E212380D090A6EF0CC5D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		83D6328F34AB9C3A97902CC3 /* MaterialViewerWatch.app */ = {
+			isa = PBXFileReference;
+			explicitFileType = wrapper.application;
+			path = MaterialViewerWatch.app;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -53,6 +63,12 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		19731AF0D6B29BA0F9354E86 /* Watch Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (D7D3D0877960BB5F2E96C0C2 /* MaterialViewerKit in Watch Frameworks */, );
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -60,6 +76,7 @@
 			isa = PBXGroup;
 			children = (
 				1BD69CBB51BCBC9CE53F9B89 /* MaterialViewer.app */,
+				83D6328F34AB9C3A97902CC3 /* MaterialViewerWatch.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -103,6 +120,23 @@
 			productReference = 1BD69CBB51BCBC9CE53F9B89 /* MaterialViewer.app */;
 			productType = "com.apple.product-type.application";
 		};
+		5D561D04F91CDC0B1463DD35 /* MaterialViewerWatchApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F6DA02AD039C162786A360EB /* Watch configuration list */;
+			buildPhases = (
+				192C67353FBF78AB86A11518 /* Watch Sources */,
+				19731AF0D6B29BA0F9354E86 /* Watch Frameworks */,
+				07BC8D487FE6C7B284F6BCFC /* Watch Resources */,
+			);
+			buildRules = ();
+			dependencies = ();
+			fileSystemSynchronizedGroups = (3A2D7D9A4004477B3CABE602 /* App */, );
+			name = MaterialViewerWatchApp;
+			packageProductDependencies = (EDCDEE3EEF343FEB8C16F589 /* MaterialViewerKit */, );
+			productName = MaterialViewerWatch;
+			productReference = 83D6328F34AB9C3A97902CC3 /* MaterialViewerWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -137,6 +171,7 @@
 			projectRoot = "";
 			targets = (
 				B1F697FAB5530156332A816B /* MaterialViewerApp */,
+				5D561D04F91CDC0B1463DD35 /* MaterialViewerWatchApp */,
 			);
 		};
 /* End PBXProject section */
@@ -149,6 +184,12 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		07BC8D487FE6C7B284F6BCFC /* Watch Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = ();
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -159,11 +200,18 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		192C67353FBF78AB86A11518 /* Watch Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = ();
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
 		C3865D6032EF5A1E0CAFF2CC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilters = (macos, );
 			productRef = EBB99A6A7A3C19DC74F6A5BD /* materialviewer */;
 		};
 /* End PBXTargetDependency section */
@@ -212,6 +260,20 @@
 			};
 			name = Release;
 		};
+		FA4494CEC1F27AAE194F786B /* Watch Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = A3EDB2934A15BCC7BCB4993B /* xcconfigs */;
+			baseConfigurationReferenceRelativePath = watch.xcconfig;
+			buildSettings = {};
+			name = Debug;
+		};
+		43995117C9B5363E42FE3A9C /* Watch Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = A3EDB2934A15BCC7BCB4993B /* xcconfigs */;
+			baseConfigurationReferenceRelativePath = watch.xcconfig;
+			buildSettings = {};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -229,6 +291,15 @@
 			buildConfigurations = (
 				B07780DEEA31F335BF544129 /* Debug */,
 				DECB8EAAF4A714A07B200348 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F6DA02AD039C162786A360EB /* Watch configuration list */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA4494CEC1F27AAE194F786B /* Watch Debug */,
+				43995117C9B5363E42FE3A9C /* Watch Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

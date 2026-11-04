@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "MaterialViewer",
-    platforms: [.macOS(.v14)],
+    platforms: [.macOS(.v14), .iOS(.v17), .watchOS(.v10), .visionOS(.v1)],
     products: [
         .library(name: "MaterialViewerKit", targets: ["MaterialViewerKit"]),
         .executable(name: "materialviewer", targets: ["MaterialViewerCLI"])
@@ -12,7 +12,7 @@ let package = Package(
         .target(name: "MaterialViewerKit", dependencies: ["MaterialRuntime"]),
         .target(
             name: "MaterialRuntime",
-            linkerSettings: [.linkedFramework("AppKit"), .linkedFramework("QuartzCore")]
+            linkerSettings: [.linkedFramework("QuartzCore")]
         ),
         .executableTarget(
             name: "MaterialViewerCLI",

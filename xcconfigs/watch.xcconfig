@@ -1,0 +1,10 @@
+#include "app.xcconfig"
+
+SDKROOT = watchos
+SUPPORTED_PLATFORMS = watchos watchsimulator
+TARGETED_DEVICE_FAMILY = 4
+PRODUCT_NAME = MaterialViewerWatch
+PRODUCT_MODULE_NAME = MaterialViewerWatchApp
+PRODUCT_BUNDLE_IDENTIFIER = org.OpenSwiftUIProject.MaterialViewer.watchkitapp
+INFOPLIST_KEY_WKApplication = YES
+INFOPLIST_KEY_WKWatchOnly = YES
