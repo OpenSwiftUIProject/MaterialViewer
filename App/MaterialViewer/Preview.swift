@@ -93,8 +93,11 @@ private struct Backdrop: View {
                 for (index, position) in positions.enumerated() {
                     let (x, y, fraction) = position
                     let side = size.width * fraction
-                    let movement = index == 0 && phase != 0 ? sin(phase * .pi / 3) * size.width * 0.2 : 0
-                    let rect = CGRect(x: size.width * x - side / 2 + movement, y: size.height * y - side / 2, width: side, height: side)
+                    let angle = phase * .pi / (3 + Double(index)) + Double(index) * .pi * 0.4
+                    let offsetX = phase == 0 ? 0 : CGFloat(sin(angle)) * size.width * 0.16
+                    let offsetY = phase == 0 ? 0 : CGFloat(cos(angle)) * size.height * 0.12
+                    let rect = CGRect(x: size.width * x - side / 2 + offsetX,
+                                      y: size.height * y - side / 2 + offsetY, width: side, height: side)
                     let path = index.isMultiple(of: 2) ? Path(ellipseIn: rect) : Path(roundedRect: rect, cornerRadius: 24)
                     context.fill(path, with: .color(colors[index]))
                 }
