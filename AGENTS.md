@@ -50,6 +50,12 @@
   embedding, and signing. Do not add script-based bundle assembly or signing.
 - Keep build settings in `xcconfigs`. Signing defaults to Automatic with team
   `VB7MJ8R223`; the bundle ID is `org.OpenSwiftUIProject.MaterialViewer`.
+- Edit `App/MaterialViewer/AppIcon.icon` with Xcode Icon Composer. Its three SVG
+  layers share the macOS, iOS, and watchOS icon; Xcode generates older OS assets.
+  visionOS uses `Assets.xcassets/AppIconVision.solidimagestack` because it does not
+  support Composer icons. Keep its 1024-pixel PNG layers in sync with the SVGs:
+  Frost in front, Blue in the middle, and Violet over an opaque background in back.
+  The visionOS SDK settings select this image stack and exclude the `.icon` file.
 - Use `App` as the file system synchronized root so Xcode displays the actual
   `App/MaterialViewer` folder hierarchy. Keep shared schemes tracked. Ignore
   local IDE state and standard build directories; fix misplaced build outputs

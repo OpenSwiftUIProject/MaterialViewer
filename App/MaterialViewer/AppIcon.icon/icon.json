@@ -1,0 +1,80 @@
+{
+  "fill-specializations": [
+    {
+      "value": {
+        "linear-gradient": [
+          "display-p3:0.08,0.20,0.46,1",
+          "display-p3:0.015,0.035,0.12,1"
+        ]
+      }
+    },
+    {
+      "appearance": "dark",
+      "value": {
+        "linear-gradient": [
+          "display-p3:0.035,0.085,0.24,1",
+          "display-p3:0.008,0.015,0.055,1"
+        ]
+      }
+    }
+  ],
+  "groups": [
+    {
+      "name": "Frost",
+      "layers": [
+        {
+          "image-name": "03-Frost.svg",
+          "name": "Frost"
+        }
+      ],
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.5
+      },
+      "translucency": {
+        "enabled": true,
+        "value": 0.5
+      }
+    },
+    {
+      "name": "Blue",
+      "layers": [
+        {
+          "image-name": "02-Blue.svg",
+          "name": "Blue"
+        }
+      ],
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.5
+      },
+      "translucency": {
+        "enabled": true,
+        "value": 0.5
+      }
+    },
+    {
+      "name": "Violet",
+      "layers": [
+        {
+          "image-name": "01-Violet.svg",
+          "name": "Violet"
+        }
+      ],
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.5
+      },
+      "translucency": {
+        "enabled": true,
+        "value": 0.5
+      }
+    }
+  ],
+  "supported-platforms": {
+    "circles": [
+      "watchOS"
+    ],
+    "squares": "shared"
+  }
+}
